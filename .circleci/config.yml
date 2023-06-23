@@ -325,11 +325,19 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - aws-cli/setup
+      - run:
+          name: "Install AWS CLI"
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
       - run:
           name: Backend smoke test.
           command: |
-            BACKEND_PUBLIC_IP=$(aws --region us-east-1 ec2 describe-instances --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" --query 'Reservations[*].Instances[*].PublicDnsName' --output text)
+            export BACKEND_PUBLIC_IP=$(aws --region us-east-1 ec2 describe-instances 
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" 
+            --query 'Reservations[*].Instances[*].PublicDnsName' 
+            --output text)
             export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
