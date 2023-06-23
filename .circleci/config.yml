@@ -325,8 +325,6 @@ jobs:
       # Checkout code from git
       - checkout
       - aws-cli/setup
-      - attach_workspace:
-          at: ~/
       - run:
           name: Backend smoke test.
           command: |
