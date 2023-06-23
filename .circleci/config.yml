@@ -112,23 +112,23 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
-      - install tar and gzip
       - run:
-          name: udapeople-backend-default
+          name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              #--tags project=udapeople \
-              # --stack-name "udapeople-backend-default" \
-              # --parameter-overrides ID="default"  
+              --tags project=udapeople \
+              --stack-name "udapeople-backend-default" \
+              --parameter-overrides ID="default"  
       - run:
-          name: udapeople-frontend-default
+          name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               #--tags project=udapeople \
               # --stack-name "udapeople-frontend-default" \
               # --parameter-overrides ID="default"  
+              exit 1
       - run:
           name: Add back-end ip to ansible inventory
           command: |
