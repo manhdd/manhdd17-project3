@@ -284,6 +284,8 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: ["b2:9f:fe:f4:2a:f1:6b:8f:45:ca:78:ea:de:cb:da:c1"]
+      - python/install-packages:
+          args: ansible
       - attach_workspace:
           at: ~/
       - run:
@@ -292,13 +294,6 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
-      - run:
-          name: Install Ansible
-          command: |
-            sudo apt update
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install ansible -y
       - run:
           name: Deploy backend
           command: |
@@ -316,7 +311,48 @@ jobs:
             ansible-playbook -i inventory.txt deploy-backend.yml -v
       # Here's where you will add some code to rollback on failure
       - revert-migrations
-      - destroy-environment 
+      - destroy-environment
+
+  smoke-test:
+    docker:
+      - image: aws-cli/default
+    steps:
+      # Checkout code from git
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip
+      - run:
+          name: Backend smoke test.
+          command: |
+            export BACKEND_PUBLIC_IP=$(aws --region us-east-1 ec2 describe-instances 
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" 
+            --query 'Reservations[*].Instances[*].PublicDnsName' 
+            --output text)
+            export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
+            echo "${API_URL}"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+              return 0
+            else
+              return 1
+            fi
+      - run:
+          name: Frontend smoke test.
+          command: |
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
+            echo ${URL} 
+            if curl -s ${URL} | grep "Welcome"
+            then
+              # Change this to 0 after the job fails
+              return 1
+            else
+              return 1
+            fi
+
+      # Here's where you will add some code to rollback on failure  
 
 workflows:
   default:
