@@ -321,7 +321,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: aws-cli/default
+      - image: amazon/aws-cli
     steps:
       # Checkout code from git
       - checkout
