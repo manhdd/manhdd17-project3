@@ -320,8 +320,7 @@ jobs:
       - destroy-environment
 
   smoke-test:
-    docker:
-      - image: amazon/aws-cli
+    executor: aws-cli/default
     steps:
       # Checkout code from git
       - checkout
