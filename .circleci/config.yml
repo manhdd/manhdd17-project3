@@ -106,6 +106,39 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-scan
+  
+  deploy-infrastructure:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - install tar and gzip
+      - run:
+          name: udapeople-backend-default
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/backend.yml \
+              #--tags project=udapeople \
+              # --stack-name "udapeople-backend-default" \
+              # --parameter-overrides ID="default"  
+      - run:
+          name: udapeople-frontend-default
+          command: |
+            aws cloudformation deploy \
+              --template-file .circleci/files/frontend.yml \
+              #--tags project=udapeople \
+              # --stack-name "udapeople-frontend-default" \
+              # --parameter-overrides ID="default"  
+      - run:
+          name: Add back-end ip to ansible inventory
+          command: |
+            # Your code here
+            exit 1
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - project/.circleci/ansible/inventory.txt
+      # Here's where you will add some code to rollback on failure   
 
 workflows:
   default:
@@ -120,4 +153,9 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
       
