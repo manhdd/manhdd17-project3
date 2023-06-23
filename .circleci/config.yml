@@ -325,10 +325,9 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            yum install -y tar gzip
+      - aws-cli/setup
+      - attach_workspace:
+          at: ~/
       - run:
           name: Backend smoke test.
           command: |
@@ -357,8 +356,9 @@ jobs:
             else
               return 1
             fi
-
-      # Here's where you will add some code to rollback on failure  
+      # Here's where you will add some code to rollback on failure 
+      - revert-migrations
+      - destroy-environment 
 
 workflows:
   default:
