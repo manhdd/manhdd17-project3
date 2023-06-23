@@ -213,6 +213,7 @@ jobs:
             echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
+      - run:
           name: Configure server
           command: |
             cat ./.circleci/ansible/inventory.txt
