@@ -330,20 +330,11 @@ jobs:
             echo "${BACKEND_PUBLIC_IP}"
             export API_URL="http://${BACKEND_PUBLIC_IP}:3030"
             echo "${API_URL}"
-            curl --version
-            # When the backend server is not ready, let retry upto 30mins
-            test_result=$(eval curl \
-              --verbose --fail \
-              --retry 15 --retry-max-time 600 --retry-all-errors \
-              --url "$API_URL/api/status")
-            if echo $test_result | grep "ok" > /dev/null
+            if curl "${API_URL}/api/status" | grep "ok"
             then
-              echo "Backend test passed"
-              echo $test_result
-              exit 0
+              return 0
             else
-              echo $test_result
-              exit 1
+              return 1
             fi
       - run:
           name: Frontend smoke test.
