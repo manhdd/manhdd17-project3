@@ -12,7 +12,7 @@
 - name: "Extract backend"
   unarchive:
     remote_src: yes
-    src: "~/artifact.tar.gz"
+    src: "artifact.tar.gz"
     dest: "~/"
 
 - name: "Run the web server"
