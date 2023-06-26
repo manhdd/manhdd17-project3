@@ -25,11 +25,11 @@ Resources:
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t3.small
+      InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
       KeyName: manhdd17-project3
-      ImageId: ami-0557a15b87f6559cf 
+      ImageId: ami-053b0d53c279acc90 
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
