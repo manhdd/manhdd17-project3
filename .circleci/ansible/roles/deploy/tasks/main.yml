@@ -3,10 +3,10 @@
   apt:
     update_cache: yes
 
-- name: "Remove dependencies that are no longer required"
+- name: "Upgrade apt"
   become: true
   apt:
-    autoremove: yes
+    upgrade: dist
 
 - name: "Install dependency"
   become: true
