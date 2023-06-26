@@ -1,4 +1,5 @@
-- name: "Update apt cache"
+---
+- name: "Update apt packages"
   become: true
   apt:
     update_cache: yes
@@ -8,10 +9,10 @@
   apt:
     autoremove: yes
 
-- name: "Install dependency"
+- name: "Install dependencies"
   become: true
   apt:
-    name: ["tar", "nodejs", "npm"]
+    name: ["nodejs", "npm", "tar"]
     state: "latest"
     update_cache: yes
 
@@ -22,3 +23,20 @@
     global: yes
     production: yes
     state: "present"
+
+- name: "Export env"
+  become: true
+  shell:  |
+    touch /etc/profile.d/env.sh
+    echo export TYPEORM_HOST=$TYPTYPEORM_HOST >> /etc/profile.d/env.sh
+    echo export TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> /etc/profile.d/env.sh
+    echo export TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> /etc/profile.d/env.sh
+    echo export TYPEORM_HOST=$TYPEORM_HOST >> /etc/profile.d/env.sh
+    echo export TYPEORM_PORT=$TYPEORM_PORT >> /etc/profile.d/env.sh
+    echo export TYPEORM_USERNAME=$TYPEORM_USERNAME >> /etc/profile.d/env.sh
+    echo export TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> /etc/profile.d/env.sh
+    echo export TYPEORM_DATABASE=$TYPEORM_DATABASE >> /etc/profile.d/env.sh
+    echo export TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> /etc/profile.d/env.sh
+    echo export TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> /etc/profile.d/env.sh
+    . /etc/environment
+    . ~/.bashrc
