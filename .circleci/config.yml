@@ -376,7 +376,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install -y tar gzip
+            yum -y install tar gzip awscli curl npm nodejs
       - attach_workspace:
           at: .
       - run:
@@ -386,11 +386,22 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
+            export OldWorkflowIDstack=$(aws cloudformation \
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text)
+            echo ${OldWorkflowIDstack} > OldWorkflowID.txt
+            cat ~/OldWorkflowID.txt
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name "udapeople-cloudfront-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
+              --stack-name InitialStack-${OldWorkflowIDstack} \
+              --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udapeople
+            echo OldWorkflowID: ${OldWorkflowIDstack}
+            echo Current work flow ID: ${CIRCLE_WORKFLOW_ID:0:7}
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./OldWorkflowID.txt
       - destroy-environment
       - revert-migrations
       
